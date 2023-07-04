@@ -182,3 +182,51 @@ def game_dict():
             ]
         }
     }
+def combine_teams():
+    game = game_dict()
+    return game["home"]["players"] + game["away"]["players"]
+
+def find_player_stat(name, stat):
+    players = combine_teams()
+    found_player = [player for player in players if player["name"]==name]
+    return None if not found_player else found_player[0] if stat=="player" else found_player[0][stat]
+
+def num_points_per_game(name):
+    return find_player_stat(name, "points_per_game")
+
+def player_age(name):
+    return find_player_stat(name, "age")
+
+def team_colors(name):
+    game = game_dict()
+    for key, value in game.items():
+        if value["team_name"]==name:
+            return value["colors"]
+
+def team_names():
+    game = game_dict()
+    return [value["team_name"] for key, value in game.items()]
+
+def player_numbers(name):
+    game = game_dict()
+    for key, team in game.items():
+        if team["team_name"]==name:
+            return [player["number"] for player in team["players"]]
+
+def player_stats(name):
+    return find_player_stat(name, "player")
+
+def average_rebounds_by_shoe_brand():
+    players = combine_teams()
+    brand_dict = {}
+    for player in players:
+        brand = player["shoe_brand"]
+        rebounds = num_rebounds_per_game(player["name"])
+        brand_dict[brand].append(rebounds) if brand_dict.get(brand, None) else brand_dict.update({brand: [rebounds]} )
+    ave_dict = {}
+    for key, value in brand_dict.items():
+        ave_dict[key] = "{:.2f}".format(sum(value)/len(value), 2)
+        print(f"{key}:  {ave_dict[key]}", end="\n")
+
+def num_rebounds_per_game(name):
+    return find_player_stat(name, "rebounds_per_game")
